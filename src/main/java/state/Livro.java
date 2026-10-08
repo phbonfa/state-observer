@@ -12,7 +12,7 @@ public class Livro implements Observer {
         return this.ultimaNotificacao;
     }
 
-    public void depositarLivro(Estante estante) {
+    public void depositarLivroEstante(Estante estante) {
         estante.addObserver(this);
     }
 

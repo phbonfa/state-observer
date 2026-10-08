@@ -185,38 +185,104 @@ public class LivroTest {
 
 
     //Test observer
+
     @Test
-    public void deveNotificarLivroAlugadoDepositado() {
-        Estante estante = new Estante("Ação", "A", "Romance");
+    void deveNotificarUmLivro() {
+        Estante estante = new Estante("Ficção", "Seção A", "Estante 1");
         Livro livro = new Livro();
         livro.setNome("Livro 1");
-        livro.depositarLivro(estante);
+        livro.depositarLivroEstante(estante);
         estante.lancarLivroDepositado();
-
-        assertEquals("Livro 1, depositado na Estante{, genero=Ação, nomeSecao='A', nomeEstante='Romance'}", livro.getUltimaNotificacao());
+        assertEquals("Livro 1, depositado na Estante{genero=Ficção, nomeSecao='Seção A', nomeEstante='Estante 1'}", livro.getUltimaNotificacao());
     }
 
     @Test
-    public void deveNotificarLivroCadastradoDepositado() {
-        Estante estante = new Estante("Ação", "A", "Romance");
+    void deveNotificarMultiplosLivros() {
+        Estante estante = new Estante("Ficção", "Seção A", "Estante 1");
+        Livro livro1 = new Livro();
+        livro1.setNome("Livro 1");
+        Livro livro2 = new Livro();
+        livro2.setNome("Livro 2");
+        livro1.depositarLivroEstante(estante);
+        livro2.depositarLivroEstante(estante);
+        estante.lancarLivroDepositado();
+        assertEquals("Livro 1, depositado na Estante{genero=Ficção, nomeSecao='Seção A', nomeEstante='Estante 1'}", livro1.getUltimaNotificacao());
+        assertEquals("Livro 2, depositado na Estante{genero=Ficção, nomeSecao='Seção A', nomeEstante='Estante 1'}", livro2.getUltimaNotificacao());
+    }
+
+    @Test
+    void naoDeveNotificarLivroNaoDepositado() {
+        Estante estante = new Estante("Ficção", "Seção A", "Estante 1");
         Livro livro = new Livro();
         livro.setNome("Livro 1");
-        livro.depositarLivro(estante);
         estante.lancarLivroDepositado();
+        assertNull(livro.getUltimaNotificacao());
+    }
 
-        assertEquals("Livro 1, depositado na Estante{, genero=Ação, nomeSecao='A', nomeEstante='Romance'}", livro.getUltimaNotificacao());
+    @Test
+    void deveNotificarApenasLivroDaEstanteNotificada() {
+        Estante estanteA = new Estante("Ficção", "Seção A", "Estante A");
+        Estante estanteB = new Estante("Ficção", "Seção B", "Estante B");
+        Livro livro1 = new Livro();
+        livro1.setNome("Livro 1");
+        Livro livro2 = new Livro();
+        livro2.setNome("Livro 2");
+        livro1.depositarLivroEstante(estanteA);
+        livro2.depositarLivroEstante(estanteB);
+        estanteA.lancarLivroDepositado();
+        assertEquals("Livro 1, depositado na Estante{genero=Ficção, nomeSecao='Seção A', nomeEstante='Estante A'}", livro1.getUltimaNotificacao());
+        assertNull(livro2.getUltimaNotificacao());
     }
 
 
-    // Testes integração state & observer
+    // Test integração State & Observer
     @Test
-    public void naoDeveNotificarLivroPerdidoDepositado() {
+    void naoDeveNotificarLivroPerdidoDepositado() {
         Estante estante = new Estante("Ação", "A", "Romance");
         Livro livro = new Livro();
         livro.setNome("Livro 1");
-        livro.depositarLivro(estante);
+        livro.depositarLivroEstante(estante);
 
         livro.setEstado(LivroEstadoPerdido.getInstance());
+
+        estante.lancarLivroDepositado();
+        assertNull(livro.getUltimaNotificacao());
+    }
+
+    @Test
+    void naoDeveNotificarLivroVendidoDepositado() {
+        Estante estante = new Estante("Ação", "A", "Romance");
+        Livro livro = new Livro();
+        livro.setNome("Livro 1");
+        livro.depositarLivroEstante(estante);
+
+        livro.vender();
+
+        estante.lancarLivroDepositado();
+        assertNull(livro.getUltimaNotificacao());
+    }
+
+    @Test
+    void naoDeveNotificarLivroAlugadoDepositado() {
+        Estante estante = new Estante("Ação", "A", "Romance");
+        Livro livro = new Livro();
+        livro.setNome("Livro 1");
+        livro.depositarLivroEstante(estante);
+
+        livro.alugar();
+
+        estante.lancarLivroDepositado();
+        assertNull(livro.getUltimaNotificacao());
+    }
+
+    @Test
+    void naoDeveNotificarLivroReservadoDepositado() {
+        Estante estante = new Estante("Ação", "A", "Romance");
+        Livro livro = new Livro();
+        livro.setNome("Livro 1");
+        livro.depositarLivroEstante(estante);
+
+        livro.reservar();
 
         estante.lancarLivroDepositado();
         assertNull(livro.getUltimaNotificacao());

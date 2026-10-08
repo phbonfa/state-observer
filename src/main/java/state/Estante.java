@@ -20,7 +20,7 @@ public class Estante extends Observable {
     @Override
     public String toString() {
         return "Estante{" +
-                ", genero=" + genero +
+                "genero=" + genero +
                 ", nomeSecao='" + nomeSecao + '\'' +
                 ", nomeEstante='" + nomeEstante + '\'' +
                 '}';
